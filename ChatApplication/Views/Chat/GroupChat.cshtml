@@ -1,0 +1,125 @@
+﻿@{
+    Layout = "_Layout";
+    var groupName = ViewBag.GroupName;
+    var groupId = ViewBag.GroupId;
+}
+<input type="hidden" id="currentUserIdd" value="@User.FindFirst("UserID")?.Value" />
+<input type="hidden" id="groupId" value="@groupId" />
+<input type="hidden" id="groupName" value="@groupName" />
+<input type="hidden" id="currentUsername" value="@User.Identity.Name" />
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card border-0 shadow-lg rounded-3 overflow-hidden">
+
+                <!-- Group Chat Header -->
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center py-3">
+                    <div class="d-flex align-items-center">
+                        <a asp-controller="Dashboard" asp-action="Dashboard"
+                           class="btn btn-light btn-sm rounded-circle me-3 d-flex align-items-center justify-content-center"
+                           style="width: 36px; height: 36px;" title="Back">
+                            <i class="bi bi-arrow-left text-primary"></i>
+                        </a>
+                        <div>
+                            <h5 class="mb-0 fw-semibold" role="button" data-bs-toggle="modal" data-bs-target="#groupMembersModal">@groupName</h5>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <i class="bi bi-three-dots-vertical text-white" role="button" data-bs-toggle="dropdown" aria-expanded="false"></i>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item text-danger" onclick="leaveGroup()">Leave Group</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Group Chat Body -->
+                <div id="groupChatBox" class="card-body bg-light" style="height: 450px; overflow-y: auto;" data-group-id="@groupId"></div>
+
+                <!-- Group Chat Footer -->
+                <div class="card-footer bg-white border-0 p-3">
+                    <div class="d-flex align-items-center">
+                        <input type="text" id="groupMessageInput" class="form-control rounded-pill me-2" placeholder="Type your message..." />
+
+                        <label for="groupFileInput" class="btn btn-outline-secondary rounded-circle me-2 d-flex align-items-center justify-content-center"
+                               style="width: 42px; height: 42px;" title="Attach file">
+                            <i class="bi bi-paperclip"></i>
+                        </label>
+                        <input type="file" id="groupFileInput" hidden onchange="showFileName()" />
+
+                        <button class="btn btn-success rounded-circle d-flex align-items-center justify-content-center"
+                                style="width: 42px; height: 42px;" onclick="sendGroupMessage()">
+                            <i class="bi bi-send-fill"></i>
+                        </button>
+                    </div>
+                    <div id="selectedFileName" class="mt-2 text-muted small text-truncate" style="max-width: 250px;"></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Group Members Modal -->
+<div class="modal fade" id="groupMembersModal" tabindex="-1" aria-labelledby="groupMembersModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow-lg rounded-3">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="groupMembersModalLabel">@groupName</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6>Current Members:</h6>
+                <ul id="currentGroupMembersList" class="list-group mb-3"></ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Message Styles -->
+<style>
+    #groupChatBox {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+        #groupChatBox div {
+            padding: 10px 14px;
+            margin-bottom: 5px;
+            border-radius: 12px;
+            max-width: 75%;
+            width: fit-content;
+            display: block;
+            word-wrap: break-word;
+        }
+
+    /* Outgoing messages */
+    .message-from-me {
+        background-color: #d1e7dd;
+        align-self: flex-end;
+        margin-left: auto;
+        text-align: right;
+    }
+
+        .message-from-me b {
+            color: #198754;
+        }
+
+    /* Incoming messages */
+    .message-from-other {
+        background-color: #ffffff;
+        align-self: flex-start;
+        border: 1px solid #e0e0e0;
+        text-align: left;
+    }
+
+        .message-from-other b {
+            color: #0d6efd;
+        }
+</style>

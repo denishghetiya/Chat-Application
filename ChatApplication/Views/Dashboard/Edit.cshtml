@@ -1,0 +1,45 @@
+﻿@model Chat.ViewModels.EditProfileViewModel
+
+<div class="d-flex justify-content-center align-items-center ">
+    <div class="card p-4 shadow-lg" style="width: 400px;">
+        <h2 class="text-center">Update Profile</h2>
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+        
+            @Html.HiddenFor(model => model.UserId)
+        
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input asp-for="Username" type="text" name="Username" class="form-control" />
+                <span asp-validation-for="Username" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input asp-for="Email" type="email" name="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input asp-for="Password" type="password" name="Password" value="@Model.Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            @if (!string.IsNullOrEmpty(Model.ExistingImagePath))
+            {
+                <div>
+                    <label class="form-label">Current Image</label><br />
+                    <img id="imagePrevieww" src="@Model.ExistingImagePath" style="width: 150px; height: 150px; object-fit: cover;" alt="Profile Image" />
+                </div>
+            }<br />
+            <div class="mb-3">
+                <label class="form-label">Update Image</label>
+                <input asp-for="Image" type="file" name="Image" class="form-control" accept="image/*" onchange="previewSelectedImage(event)" />
+                <span asp-validation-for="Image" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Update</button>
+            <a asp-action="Dashboard" class="btn btn-secondary mt-2">Cancel</a>
+        </form>
+        <div asp-validation-summary="All" class="text-danger"></div>
+    </div>
+</div>
+    
+
+<script src="~/js/site.js"></script>

@@ -1,0 +1,110 @@
+﻿@{
+    Layout = "_Layout"; 
+    var friendName = ViewBag.FriendName; 
+    var friendId = ViewBag.FriendId;
+}
+<input type="hidden" id="currentUserId" value="@User.FindFirst("UserID")?.Value" />
+<input type="hidden" id="friendId" value="@friendId" />
+<input type="hidden" id="friendName" value="@friendName" />
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card border-0 shadow-lg rounded-3 overflow-hidden">
+
+                <!-- Chat Header -->
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center py-3">
+                    <div class="d-flex align-items-center">
+                        <a asp-controller="Dashboard" asp-action="Dashboard"
+                           class="btn btn-light btn-sm rounded-circle me-3 d-flex align-items-center justify-content-center"
+                           style="width: 36px; height: 36px;" title="Back">
+                            <i class="bi bi-arrow-left text-primary"></i>
+                        </a>
+                        <div>
+                            <h5 class="mb-0 fw-semibold">@friendName</h5>
+                            <small id="chatFriendStatus" class="text-white-50"></small>
+                        </div>
+                    </div>
+                    <span id="typingStatus" class="small fst-italic"></span>
+                </div>
+
+                <!-- Chat Body -->
+                <div id="chatBox" class="card-body bg-light" style="height: 450px; overflow-y: auto;" data-user-id="@friendId"></div>
+
+                <!-- Chat Footer -->
+                <div class="card-footer bg-white border-0 p-3">
+                    <div class="d-flex align-items-center">
+                        <input type="text" id="messageInput" class="form-control rounded-pill me-2" placeholder="Type your message..." />
+
+                        <label for="fileInput" class="btn btn-outline-secondary rounded-circle me-2 d-flex align-items-center justify-content-center"
+                               style="width: 42px; height: 42px;" title="Attach file">
+                            <i class="bi bi-paperclip"></i>
+                        </label>
+                        <input type="file" id="fileInput" hidden onchange="showFileName1()" />
+
+                        <button class="btn btn-success rounded-circle d-flex align-items-center justify-content-center"
+                                style="width: 42px; height: 42px;" onclick="sendMessage()">
+                            <i class="bi bi-send-fill"></i>
+                        </button>
+                    </div>
+                    <div id="selectedFileName1" class="mt-2 text-muted small text-truncate" style="max-width: 250px;"></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Styling for message bubbles -->
+<style>
+    #chatBox {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+        #chatBox div {
+            padding: 10px 14px;
+            margin-bottom: 5px;
+            border-radius: 12px;
+            max-width: 75%;
+            width: fit-content;
+            display: block;
+            word-wrap: break-word;
+        }
+
+        /* Left (incoming) messages */
+        .message-left,
+        #chatBox .text-start {
+            background-color: #ffffff;
+            align-self: flex-start;
+            border: 1px solid #e0e0e0;
+        }
+
+            .message-left b,
+            .text-start > b {
+                color: #0d6efd;
+            }
+
+        /* Right (outgoing) messages */
+        .message-right,
+        #chatBox .text-end {
+            background-color: #d1e7dd;
+            align-self: flex-end;
+            margin-left: auto;
+            text-align: right;
+        }
+
+            .message-right b,
+            .text-end > b {
+                color: #198754;
+            }
+
+    #chatFriendStatus {
+        min-width: 60px;
+        text-align: center;
+        background-color: transparent !important;
+    }
+
+</style>
+
