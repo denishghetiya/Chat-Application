@@ -365,3 +365,5 @@ FodyWeavers.xsd
 /.gitignore
 /.gitignore
 /.gitignore
+/ChatApplication/appsettings.json
+/.gitignore
