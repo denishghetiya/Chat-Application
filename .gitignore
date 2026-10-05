@@ -362,9 +362,3 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /ChatApplication/wwwroot/Uploads
-/.gitignore
-/.gitignore
-/.gitignore
-/ChatApplication/appsettings.json
-/.gitignore
-/ChatApplication/appsettings.json
