@@ -90,7 +90,7 @@ namespace Chat.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var email = _context.Users.FirstOrDefault(u => u.Email == model.Email);
+            var email = _context.Users.FirstOrDefault(u => u.Email == model.Email || u.Username == model.Username);
             if (email == null)
             {
                 var uploadsFolder = Path.Combine(_webHost.WebRootPath, "Uploads");
@@ -135,7 +135,19 @@ namespace Chat.Controllers
 
                 return RedirectToAction("Login");
             }
-            ModelState.AddModelError("", "This Email has already account.");
+            else
+            {
+                if (model.Email == email.Email)
+                {
+                    ModelState.AddModelError("", "This Email is already registered.");
+                    return View(model);
+                }
+                if (model.Username == email.Username)
+                {
+                    ModelState.AddModelError("", "This Username is already registered.");
+                    return View(model);
+                }
+            }
             return View(model);
         }
 

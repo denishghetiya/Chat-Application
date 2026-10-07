@@ -351,7 +351,7 @@ function performEmailSearch(email) {
             }
 
             html += `<li class="list-group-item d-flex justify-content-between align-items-center">
-                        ${u.email}
+                        ${u.username}
                         ${buttonHtml}
                      </li>`;
         });
@@ -386,7 +386,7 @@ function loadPendingRequests() {
         let html = "";
         requests.filter(r => r.status === "Pending").forEach(r => {
             html += `<li class="list-group-item d-flex justify-content-between align-items-center">
-                        <span>${r.fromUsername} (${r.fromEmail})</span>
+                        <span>${r.fromUsername}</span>
                         <button class="btn btn-sm btn-primary acceptRequestBtn" data-id="${r.requestId}">Accept</button>
                         <button class="btn btn-sm btn-danger removeFriendBtn" data-id="${r.requestId}" data-action="removeRequest">Remove</button>
                      </li>`;
@@ -524,7 +524,7 @@ function leaveGroup() {
     if (confirm(`Are you sure you want to leave the group '${groupName}'?`)) {
         $.post("/Dashboard/LeaveGroup", { groupId: groupId, groupName: groupName })
             .done(function (response) {
-                alert(response.message || `You have left the group '${groupName}'.`);
+                alert(response.message);
                 window.location.href = "/Dashboard/Dashboard";
             })
             .fail(function (xhr) {

@@ -57,6 +57,7 @@ namespace Chat.Controllers
             if (user == null) return NotFound();
 
             var email = _context.Users.FirstOrDefault(u => u.Email == model.Email);
+            var username = _context.Users.FirstOrDefault(u => u.Username == model.Username);
             if (email != null)
             {
                 if (model.Email != user.Email && model.Email == email.Email)
@@ -65,13 +66,24 @@ namespace Chat.Controllers
                     return View(model);
                 }
             }
+            if (username != null)
+            {
+                if (model.Username != user.Username && model.Username == email.Username)
+                {
+                    ModelState.AddModelError("", "This Username has already account.");
+                    return View(model);
+                }
+            }
 
             if (email == null)
             {
                 user.Email = model.Email;
             }
+            if (username == null)
+            {
+                user.Username = model.Username;
+            }
 
-            user.Username = model.Username;
             user.Password = model.Password;
 
             if (model.Image != null)
@@ -123,7 +135,7 @@ namespace Chat.Controllers
                 .Select(u => new
                 {
                     u.UserId,
-                    u.Email,
+                    u.Username,
                     IsFriend = _context.FriendLists.Any(f =>
                         (f.UserId == currentUserId && f.FriendUserId == u.UserId)
                         || (f.UserId == u.UserId && f.FriendUserId == currentUserId)
@@ -137,7 +149,7 @@ namespace Chat.Controllers
             var result = users.Select(u => new
             {
                 u.UserId,
-                u.Email,
+                u.Username,                
                 Action = u.IsPending ? "pending" : (u.IsFriend ? "remove" : "add")
             });
 
@@ -252,7 +264,6 @@ namespace Chat.Controllers
                 {
                     requestId = fr.RequestId,
                     fromUsername = fr.FromUser.Username,
-                    fromEmail = fr.FromUser.Email,
                     status = fr.Status
                 })
                 .ToList();
@@ -475,12 +486,13 @@ namespace Chat.Controllers
 
                         if (!hasOtherAdmin)
                         {
-                            var makeAdmin = await _context.GroupMembers.FirstOrDefaultAsync(g => g.GroupId == group.GroupId && g.UserId != userId);
-                            if (makeAdmin != null)
-                            {
-                                makeAdmin.IsAdmin = true;
-                                await _context.SaveChangesAsync();
-                            }
+                            //var makeAdmin = await _context.GroupMembers.FirstOrDefaultAsync(g => g.GroupId == group.GroupId && g.UserId != userId);
+                            //if (makeAdmin != null)
+                            //{
+                            //    makeAdmin.IsAdmin = true;
+                            //    await _context.SaveChangesAsync();
+                            //}
+                            return Ok(new { message = "Before leaving the group make anyone Admin." });
                         }
                     }
 
@@ -495,13 +507,14 @@ namespace Chat.Controllers
                     //    _context.Messages.RemoveRange(messages);
                     //    await _context.SaveChangesAsync();
                     //}
+
+                    await _hubContext.Clients.Group(groupName)
+                        .SendAsync("ReceiveSystemMessageGroup", $"{User.Identity.Name} left the group.");
+
+                    return Ok(new { message = "You have left the group." });
                 }
             }
-
-            await _hubContext.Clients.Group(groupName)
-                .SendAsync("ReceiveSystemMessageGroup", $"{User.Identity.Name} left the group.");
-
-            return Ok(new { message = "You have left the group." });
+            return Ok(new { message = "Group not found." });
         }
 
         public async Task<IActionResult> RemoveGroup(int groupId)
